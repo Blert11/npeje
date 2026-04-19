@@ -1,0 +1,210 @@
+.promo-banner {
+  padding-block: clamp(20px, 4vw, 40px);
+}
+
+.promo-banner__card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  position: relative;
+  transition: transform var(--transition), box-shadow var(--transition);
+  min-height: 300px;
+}
+
+.promo-banner__card--adv {
+  background: linear-gradient(135deg, #2d4a3e 0%, #1a5c4a 60%, #0d3535 100%);
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+}
+.promo-banner__card--adv:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+
+.promo-banner__card--taxi {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #dc2626 100%);
+  color: #fff;
+  min-height: 220px;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  grid-template-columns: 1fr;
+}
+.promo-banner__card--taxi:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 64px rgba(251, 191, 36, 0.4);
+}
+
+.promo-banner__content {
+  padding: clamp(24px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative;
+  z-index: 2;
+}
+
+.promo-banner__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(200,169,106,0.15);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(6px);
+}
+
+.promo-banner__title {
+  font-size: clamp(24px, 3vw, 36px);
+  color: #fff;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.promo-banner__desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.85);
+  max-width: 420px;
+  margin-bottom: 6px;
+}
+
+.promo-banner__card--adv .btn-primary {
+  background: var(--accent);
+  color: #3a2c14;
+  box-shadow: 0 4px 14px rgba(200,169,106,0.4);
+}
+.promo-banner__card--adv .btn-primary:hover {
+  background: #d4b87a;
+  transform: translateY(-1px);
+}
+
+/* Media side (adventures banner) */
+.promo-banner__media {
+  position: relative;
+  height: 100%;
+  min-height: 280px;
+  overflow: hidden;
+}
+.promo-banner__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.promo-banner__card--adv:hover .promo-banner__media img {
+  transform: scale(1.03);
+}
+.promo-banner__media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(13,53,53,0.85) 0%, rgba(13,53,53,0.15) 50%, transparent 100%);
+  z-index: 1;
+}
+
+.taxi-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.taxi-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+  padding: 14px 22px;
+  background: rgba(255,255,255,0.95);
+  color: var(--gray-900);
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  transition: transform var(--transition);
+}
+.promo-banner__card--taxi:hover .taxi-cta { transform: translateX(4px); }
+
+.taxi-cta__icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.taxi-cta span:last-child {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  min-width: 0;
+}
+.taxi-cta small {
+  font-size: 11px;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+.taxi-cta strong {
+  font-size: 16px;
+  color: var(--gray-900);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* ─── MOBILE: stack content above media, keep it compact ─── */
+@media (max-width: 900px) {
+  .promo-banner__card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .promo-banner__card--adv {
+    grid-template-rows: auto 200px;
+  }
+  .promo-banner__media {
+    min-height: 200px;
+    order: 2;
+  }
+  .promo-banner__content { order: 1; }
+  .promo-banner__media::before {
+    background: linear-gradient(to bottom, rgba(13,53,53,0.2), transparent 50%);
+  }
+}
+
+@media (max-width: 560px) {
+  .promo-banner__card--adv {
+    grid-template-rows: auto 160px;
+  }
+  .promo-banner__media { min-height: 160px; }
+  .promo-banner__title { font-size: 22px; }
+  .promo-banner__desc  { font-size: 14px; }
+
+  .promo-banner__card--taxi {
+    min-height: 0;
+    padding: 24px 20px;
+  }
+  .taxi-cta {
+    padding: 12px 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .taxi-cta small { font-size: 10px; }
+  .taxi-cta strong { font-size: 14px; }
+}

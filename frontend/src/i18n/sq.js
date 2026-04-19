@@ -1,0 +1,147 @@
+// Albanian (Shqip) — DEFAULT language
+const sq = {
+  // Nav
+  'nav.explore':      'Zbulo',
+  'nav.hotels':       'Hotele',
+  'nav.restaurants':  'Restorante',
+  'nav.fast_food':    'Ushqim i Shpejtë',
+  'nav.activities':   'Aktivitete',
+  'nav.map':          'Harta',
+  'nav.contact':      'Kontakt',
+  'nav.categories':   'Kategori',
+  'nav.account':      'Llogaria',
+  'nav.signin':       'Hyr',
+  'nav.signout':      'Dil',
+  'nav.join':         'Regjistrohu',
+  'nav.dashboard':    'Paneli',
+  'nav.support':      'Suport',
+
+  // Hero
+  'hero.eyebrow':  'Zbuloje Pejën',
+  'hero.title':    'Ku të hash,\nflesh & eksplorosh',
+  'hero.subtitle': 'Udhërrëfyesi lokal për Pejë dhe Luginën e Rugovës.',
+  'hero.searchPlaceholder': 'Kërko hotele, restorante, ushqim të shpejtë…',
+
+  // Sections
+  'section.offers':        'Ofertat më të Reja',
+  'section.offersEyebrow': '⚡ Koha e kufizuar',
+  'section.rugovaTitle':   'Kanioni i Rugovës ju Pret',
+  'section.rugovaDesc':    'Një nga grykat më spektakolare të Ballkanit — 25 km me shkëmbinj dramatik, lumenj kristal dhe shtigje alpine.',
+  'section.rugovaCta':     'Eksploro Aktivitetet',
+  'section.latestAdventures': 'Aventurat më të Reja',
+  'section.adventuresDesc':   'Zbulo Rugovën ndryshe — eskurzione, ferata, dhe më shumë.',
+  'section.bookTaxi':      'Thirr një Taksi',
+  'section.taxiDesc':      'Transport i shpejtë dhe i sigurt në Pejë 24/7',
+  'section.taxiCta':       'Thirr tani',
+
+  // Categories
+  'cat.hotels':      'Hotele',
+  'cat.restaurants': 'Restorante',
+  'cat.fast_food':   'Ushqim i Shpejtë',
+  'cat.cafes':       'Kafene',
+  'cat.villas':      'Vila',
+  'cat.activities':  'Aktivitete',
+  'cat.nightlife':   'Jetë Nate',
+  'cat.transport':   'Transport',
+  'cat.shops':       'Dyqane',
+
+  // Listing card / detail
+  'listing.open':       'Hapur',
+  'listing.closed':     'Mbyllur',
+  'listing.seeAll':     'Shiko të gjitha',
+  'listing.featured':   'Zgjedhur',
+  'listing.call':       'Telefono',
+  'listing.menu':       'Shiko Menunë',
+  'listing.viewMenu':   'Shiko Menunë',
+  'listing.directions': 'Udhëzime',
+  'listing.website':    'Uebfaqja',
+  'listing.about':      'Rreth nesh',
+  'listing.features':   'Veçori & Shërbime',
+  'listing.reviews':    'Komente',
+  'listing.writeReview':'Shkruaj një koment',
+  'listing.signinToReview': 'Hyr për të komentuar',
+  'listing.openingHours':'Orari',
+  'listing.location':   'Vendndodhja',
+  'listing.contact':    'Kontakt',
+  'listing.openInMaps': 'Hap në Harta',
+  'listing.noReviews':  'Nuk ka komente ende. Bëhu i pari!',
+
+  // Days
+  'day.mon': 'E Hënë', 'day.tue': 'E Martë', 'day.wed': 'E Mërkurë',
+  'day.thu': 'E Enjte', 'day.fri': 'E Premte', 'day.sat': 'E Shtunë', 'day.sun': 'E Diel',
+
+  // Menu lightbox
+  'menu.title':    'Menuja',
+  'menu.close':    'Mbyll',
+  'menu.empty':    'Menuja do të shtohet së shpejti.',
+
+  // Contact / auth
+  'contact.title':     'Na Kontaktoni',
+  'contact.subtitle':  'Ke pyetje ose dëshiron ta listosh biznesin tënd?',
+  'contact.name':      'Emri',
+  'contact.email':     'Email',
+  'contact.phone':     'Telefoni',
+  'contact.topic':     'Tema',
+  'contact.message':   'Mesazhi',
+  'contact.send':      'Dërgo Mesazhin',
+  'contact.sending':   'Po dërgohet…',
+  'contact.success':   'Mesazhi u dërgua!',
+  'contact.general':   'Pyetje të përgjithshme',
+  'contact.addBiz':    'Shto biznesin tim',
+  'contact.listingQ':  'Pyetje për listimin',
+
+  'auth.signin':       'Hyr',
+  'auth.signup':       'Regjistrohu',
+  'auth.welcome':      'Mirësevjen përsëri',
+  'auth.createAcct':   'Krijo llogari',
+  'auth.fullName':     'Emri i plotë',
+  'auth.password':     'Fjalëkalimi',
+  'auth.noAccount':    'Nuk ke llogari?',
+  'auth.haveAccount':  'Ke tashmë një llogari?',
+
+  // Admin
+  'admin.listings':    'Listimet',
+  'admin.users':       'Përdoruesit',
+  'admin.offers':      'Ofertat',
+  'admin.contacts':    'Kontaktet',
+  'admin.analytics':   'Statistikat',
+  'admin.overview':    'Përmbledhje',
+  'admin.menu':        'Menuja',
+
+  // Common
+  'common.loading': 'Po ngarkohet…',
+  'common.save':    'Ruaj',
+  'common.cancel':  'Anulo',
+  'common.edit':    'Ndrysho',
+  'common.delete':  'Fshij',
+  'common.confirm': 'Konfirmo',
+  'common.close':   'Mbyll',
+  'common.search':  'Kërko',
+  'common.all':     'Të gjitha',
+  'common.more':    'Më shumë',
+  'common.now':     'tani',
+  'common.viewing': 'duke shikuar',
+  'common.addImage':'Shto imazh',
+  'common.uploadImage':'Ngarko imazh',
+  'common.chooseImage':'Zgjedh imazh',
+
+  // Features strip & About section
+  'features.mountainViews': 'Pamje Malesh',
+  'features.mountainDesc':  'Porta e Bjeshkëve të Nemuna',
+  'features.authenticFood': 'Ushqim Autentik',
+  'features.foodDesc':      'Kuzhinë tradicionale ballkanike',
+  'features.adventure':     'Aventura',
+  'features.adventureDesc': 'Eskurzione, zip-line, ferrata',
+  'features.comfort':       'Qëndrime Komode',
+  'features.comfortDesc':   'Hotele, vila, bujtina malore',
+
+  'about.eyebrow':  'Rreth Pejës',
+  'about.title':    'Perla e Fshehur e Kosovës',
+  'about.p1':       'E vendosur në rrëzën e Bjeshkëve të Nemuna, Peja është një qytet ku trashëgimia osmane takon natyrën alpine. Nga Patrikana e Pejës e mbrojtur nga UNESCO deri te shkëmbinjtë dramatik të Kanionit të Rugovës, çdo cep ka një histori.',
+  'about.p2':       'Nëse jeni këtu për një pushim fundjave, aventurë për ecje apo për të provuar flijën dhe qebapat e vërtetë, ne ju ndihmojmë të gjeni më të mirën e qytetit — përzgjedhur nga banorët lokalë.',
+  'about.listings': 'Listime',
+  'about.canyon':   'Kanioni i Rugovës',
+  'about.founded':  'E themeluar',
+};
+
+export default sq;

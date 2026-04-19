@@ -1,0 +1,279 @@
+/* ── Feature strip ─────────────────────────────────────── */
+.feature-strip {
+  padding: 40px 0;
+  background: #fff;
+  border-top: 1px solid var(--gray-100);
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.feature-strip__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.feature-strip__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px;
+  opacity: 0;
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.feature-strip__icon {
+  font-size: 32px;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-xlight);
+  border-radius: var(--radius-lg);
+  transition: transform var(--transition);
+}
+.feature-strip__item:hover .feature-strip__icon {
+  transform: scale(1.1) rotate(-5deg);
+  background: var(--theme-accent, var(--primary));
+}
+
+.feature-strip__item strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 2px;
+}
+.feature-strip__item p {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .feature-strip__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .feature-strip__grid { grid-template-columns: 1fr; gap: 10px; }
+  .feature-strip { padding: 24px 0; }
+}
+
+/* ── About Peja ────────────────────────────────────────── */
+.about-peja {
+  padding-block: clamp(50px, 7vw, 90px);
+  background: linear-gradient(180deg, var(--gray-50) 0%, #fff 100%);
+}
+
+.about-peja__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.about-peja__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-peja__eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--theme-accent, var(--primary));
+  margin-bottom: 4px;
+}
+
+.about-peja__content h2 {
+  font-size: clamp(28px, 4vw, 42px);
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.about-peja__content p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--gray-600);
+}
+
+.about-peja__stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.about-peja__stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.about-peja__stats strong {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--theme-accent, var(--primary));
+  line-height: 1;
+}
+
+.about-peja__stats span {
+  font-size: 12px;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.about-peja__image {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  aspect-ratio: 4/5;
+  box-shadow: var(--shadow-lg);
+}
+.about-peja__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.about-peja__image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.15), transparent 40%);
+}
+
+@media (max-width: 900px) {
+  .about-peja__grid { grid-template-columns: 1fr; gap: 32px; }
+  .about-peja__image { aspect-ratio: 16/9; }
+  .about-peja__stats { gap: 20px; }
+  .about-peja__stats strong { font-size: 24px; }
+}
+
+/* ── Hero video section ────────────────────────────────── */
+.hero-video {
+  position: relative;
+  min-height: 560px;
+  padding-top: calc(var(--nav-height) + 40px);
+  padding-bottom: 48px;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+}
+
+.hero-video__media { position: absolute; inset: 0; z-index: -1; }
+
+.hero-video__fallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #175354 0%, #1a4a4b 35%, #2d6a5e 70%, #1c3a35 100%);
+}
+
+.hero-video__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-video__bg.loaded { opacity: 1; }
+
+.hero-video__overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.65) 100%),
+    radial-gradient(ellipse at top right, rgba(200,169,106,0.12), transparent 60%);
+}
+
+.hero-video__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 720px;
+  align-items: flex-start;
+  color: #fff;
+}
+
+.hero-video__eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(200,169,106,0.15);
+  border: 1px solid rgba(200,169,106,0.3);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(8px);
+}
+
+.hero-video__title {
+  font-size: clamp(40px, 6vw, 72px);
+  color: #fff;
+  line-height: 1.02;
+  margin: 0;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+
+.hero-video__subtitle {
+  font-size: clamp(16px, 1.6vw, 20px);
+  color: rgba(255,255,255,0.88);
+  line-height: 1.5;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.3);
+}
+
+.hero-video__search {
+  width: 100%;
+  max-width: 580px;
+  margin-top: 8px;
+}
+
+.hero-video__chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.95);
+  transition: all var(--transition);
+}
+.hero-chip:hover {
+  background: var(--chip-color, rgba(255,255,255,0.25));
+  border-color: var(--chip-color, transparent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+.hero-chip__icon { font-size: 14px; }
+
+@media (max-width: 768px) {
+  .hero-video {
+    min-height: 480px;
+    padding-top: calc(56px + 32px);
+  }
+}

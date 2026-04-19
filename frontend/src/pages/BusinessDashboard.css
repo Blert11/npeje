@@ -1,0 +1,113 @@
+.business-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--gray-50);
+}
+
+.business-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--primary-dark);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+
+.business-sidebar__brand {
+  padding: 24px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.business-sidebar__brand a {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.business-sidebar__brand span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: 2px;
+  display: block;
+}
+
+.business-sidebar__nav {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.business-content {
+  flex: 1;
+  margin-left: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.business-period-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.business-period-bar h2 { font-size: 22px; font-weight: 600; }
+
+.period-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  padding: 4px;
+}
+.period-tab {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  transition: all var(--transition);
+}
+.period-tab.active {
+  background: #fff;
+  color: var(--primary-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #15803d;
+  background: #dcfce7;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+}
+
+.business-live-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #15803d;
+}
+
+@media (max-width: 768px) {
+  .business-sidebar  { width: 0; overflow: hidden; }
+  .business-content  { margin-left: 0; }
+}
