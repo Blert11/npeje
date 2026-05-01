@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useT } from '../../i18n';
 import { CATEGORIES } from '../../utils/helpers';
 import SearchBar from '../common/SearchBar';
+import Icon from '../common/Icon';
 
 const DEFAULT_VIDEO_URL = 'https://cdn.pixabay.com/video/2023/09/19/181296-865574998_large.mp4';
 
@@ -30,9 +31,7 @@ export default function HeroVideo({ videoUrl = DEFAULT_VIDEO_URL }) {
       <div className="hero-video__media">
         <div className="hero-video__fallback" />
         {!videoError && (
-          <video
-            ref={videoRef}
-            autoPlay muted loop playsInline preload="auto"
+          <video ref={videoRef} autoPlay muted loop playsInline preload="auto"
             className={`hero-video__bg ${videoLoaded ? 'loaded' : ''}`}
             poster="https://images.unsplash.com/photo-1551632811-561732d1e306?w=1920&q=80">
             <source src={videoUrl} type="video/mp4" />
@@ -54,15 +53,18 @@ export default function HeroVideo({ videoUrl = DEFAULT_VIDEO_URL }) {
         <p className="hero-video__subtitle animate-fade-up" style={{ animationDelay: '0.2s' }}>
           {t('hero.subtitle')}
         </p>
+
+        {/* Search — parent .searchbar gets z-index 500 when open */}
         <div className="hero-video__search animate-fade-up" style={{ animationDelay: '0.3s' }}>
           <SearchBar placeholder={t('hero.searchPlaceholder')} />
         </div>
 
+        {/* Chips — lower stacking context so dropdown covers them */}
         <div className="hero-video__chips animate-fade-up" style={{ animationDelay: '0.4s' }}>
           {CATEGORIES.slice(0, 6).map(cat => (
             <Link key={cat.id} to={`/listings?category=${cat.id}`}
               className="hero-chip" style={{ '--chip-color': cat.color }}>
-              <span className="hero-chip__icon">{cat.icon}</span>
+              <Icon name={cat.iconName} size={14} />
               <span>{t(`cat.${cat.id}`)}</span>
             </Link>
           ))}

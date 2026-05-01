@@ -24,7 +24,7 @@ const sq = {
 
   // Sections
   'section.offers':        'Ofertat më të Reja',
-  'section.offersEyebrow': '⚡ Koha e kufizuar',
+  'section.offersEyebrow': 'Koha e kufizuar',
   'section.rugovaTitle':   'Kanioni i Rugovës ju Pret',
   'section.rugovaDesc':    'Një nga grykat më spektakolare të Ballkanit — 25 km me shkëmbinj dramatik, lumenj kristal dhe shtigje alpine.',
   'section.rugovaCta':     'Eksploro Aktivitetet',
@@ -33,6 +33,19 @@ const sq = {
   'section.bookTaxi':      'Thirr një Taksi',
   'section.taxiDesc':      'Transport i shpejtë dhe i sigurt në Pejë 24/7',
   'section.taxiCta':       'Thirr tani',
+
+  // Spotlights (NEW in v5)
+  'spotlight.avgRating':  'Vlerësimi mesatar',
+  'spotlight.alwaysOpen': 'Gjithmonë hapur',
+  'spotlight.fromPrice':  'Duke filluar nga',
+  'spotlight.options':    'Opsione',
+  'spotlight.altitude':   'Lartësia maksimale',
+  'spotlight.restaurants.title': 'Shijoni Kuzhinën Tradicionale',
+  'spotlight.restaurants.desc':  'Nga flija e famshme deri te peshku i freskët i Drinit, Peja ofron një pallet të pasur shijesh.',
+  'spotlight.hotels.title': 'Gjumë i Mirë, Zgjim i Mrekullueshëm',
+  'spotlight.hotels.desc':  'Hotele komode në qendër të qytetit ose bujtina malore me pamje të paharrueshme.',
+  'spotlight.activities.title': 'Aventura Pa Kufi',
+  'spotlight.activities.desc':  'Eskurzione, ferrata, zip-line dhe më shumë në një nga grykat më të bukura të Ballkanit.',
 
   // Categories
   'cat.hotels':      'Hotele',
@@ -45,7 +58,7 @@ const sq = {
   'cat.transport':   'Transport',
   'cat.shops':       'Dyqane',
 
-  // Listing card / detail
+  // Listing
   'listing.open':       'Hapur',
   'listing.closed':     'Mbyllur',
   'listing.seeAll':     'Shiko të gjitha',
@@ -70,60 +83,28 @@ const sq = {
   'day.mon': 'E Hënë', 'day.tue': 'E Martë', 'day.wed': 'E Mërkurë',
   'day.thu': 'E Enjte', 'day.fri': 'E Premte', 'day.sat': 'E Shtunë', 'day.sun': 'E Diel',
 
-  // Menu lightbox
-  'menu.title':    'Menuja',
-  'menu.close':    'Mbyll',
-  'menu.empty':    'Menuja do të shtohet së shpejti.',
+  'menu.title': 'Menuja', 'menu.close': 'Mbyll', 'menu.empty': 'Menuja do të shtohet së shpejti.',
 
-  // Contact / auth
-  'contact.title':     'Na Kontaktoni',
-  'contact.subtitle':  'Ke pyetje ose dëshiron ta listosh biznesin tënd?',
-  'contact.name':      'Emri',
-  'contact.email':     'Email',
-  'contact.phone':     'Telefoni',
-  'contact.topic':     'Tema',
-  'contact.message':   'Mesazhi',
-  'contact.send':      'Dërgo Mesazhin',
-  'contact.sending':   'Po dërgohet…',
-  'contact.success':   'Mesazhi u dërgua!',
-  'contact.general':   'Pyetje të përgjithshme',
-  'contact.addBiz':    'Shto biznesin tim',
-  'contact.listingQ':  'Pyetje për listimin',
+  'contact.title': 'Na Kontaktoni', 'contact.subtitle': 'Ke pyetje ose dëshiron ta listosh biznesin tënd?',
+  'contact.name': 'Emri', 'contact.email': 'Email', 'contact.phone': 'Telefoni',
+  'contact.topic': 'Tema', 'contact.message': 'Mesazhi', 'contact.send': 'Dërgo Mesazhin',
+  'contact.sending': 'Po dërgohet…', 'contact.success': 'Mesazhi u dërgua!',
+  'contact.general': 'Pyetje të përgjithshme', 'contact.addBiz': 'Shto biznesin tim',
+  'contact.listingQ': 'Pyetje për listimin',
 
-  'auth.signin':       'Hyr',
-  'auth.signup':       'Regjistrohu',
-  'auth.welcome':      'Mirësevjen përsëri',
-  'auth.createAcct':   'Krijo llogari',
-  'auth.fullName':     'Emri i plotë',
-  'auth.password':     'Fjalëkalimi',
-  'auth.noAccount':    'Nuk ke llogari?',
-  'auth.haveAccount':  'Ke tashmë një llogari?',
+  'auth.signin': 'Hyr', 'auth.signup': 'Regjistrohu', 'auth.welcome': 'Mirësevjen përsëri',
+  'auth.createAcct': 'Krijo llogari', 'auth.fullName': 'Emri i plotë', 'auth.password': 'Fjalëkalimi',
+  'auth.noAccount': 'Nuk ke llogari?', 'auth.haveAccount': 'Ke tashmë një llogari?',
 
-  // Admin
-  'admin.listings':    'Listimet',
-  'admin.users':       'Përdoruesit',
-  'admin.offers':      'Ofertat',
-  'admin.contacts':    'Kontaktet',
-  'admin.analytics':   'Statistikat',
-  'admin.overview':    'Përmbledhje',
-  'admin.menu':        'Menuja',
+  'admin.listings': 'Listimet', 'admin.users': 'Përdoruesit', 'admin.offers': 'Ofertat',
+  'admin.contacts': 'Kontaktet', 'admin.analytics': 'Statistikat', 'admin.overview': 'Përmbledhje',
+  'admin.menu': 'Menuja',
 
-  // Common
-  'common.loading': 'Po ngarkohet…',
-  'common.save':    'Ruaj',
-  'common.cancel':  'Anulo',
-  'common.edit':    'Ndrysho',
-  'common.delete':  'Fshij',
-  'common.confirm': 'Konfirmo',
-  'common.close':   'Mbyll',
-  'common.search':  'Kërko',
-  'common.all':     'Të gjitha',
-  'common.more':    'Më shumë',
-  'common.now':     'tani',
-  'common.viewing': 'duke shikuar',
-  'common.addImage':'Shto imazh',
-  'common.uploadImage':'Ngarko imazh',
-  'common.chooseImage':'Zgjedh imazh',
+  'common.loading': 'Po ngarkohet…', 'common.save': 'Ruaj', 'common.cancel': 'Anulo',
+  'common.edit': 'Ndrysho', 'common.delete': 'Fshij', 'common.confirm': 'Konfirmo',
+  'common.close': 'Mbyll', 'common.search': 'Kërko', 'common.all': 'Të gjitha',
+  'common.more': 'Më shumë', 'common.now': 'tani', 'common.viewing': 'duke shikuar',
+  'common.addImage': 'Shto imazh', 'common.uploadImage': 'Ngarko imazh', 'common.chooseImage':'Zgjedh imazh',
 
   // Features strip & About section
   'features.mountainViews': 'Pamje Malesh',
@@ -137,8 +118,8 @@ const sq = {
 
   'about.eyebrow':  'Rreth Pejës',
   'about.title':    'Perla e Fshehur e Kosovës',
-  'about.p1':       'E vendosur në rrëzën e Bjeshkëve të Nemuna, Peja është një qytet ku trashëgimia osmane takon natyrën alpine. Nga Patrikana e Pejës e mbrojtur nga UNESCO deri te shkëmbinjtë dramatik të Kanionit të Rugovës, çdo cep ka një histori.',
-  'about.p2':       'Nëse jeni këtu për një pushim fundjave, aventurë për ecje apo për të provuar flijën dhe qebapat e vërtetë, ne ju ndihmojmë të gjeni më të mirën e qytetit — përzgjedhur nga banorët lokalë.',
+  'about.p1':       'E vendosur në rrëzën e Bjeshkëve të Nemuna, Peja është një qytet ku trashëgimia osmane takon natyrën alpine.',
+  'about.p2':       'Nëse jeni këtu për një pushim fundjave, aventurë për ecje apo për të provuar flijën dhe qebapat e vërtetë, ne ju ndihmojmë të gjeni më të mirën e qytetit.',
   'about.listings': 'Listime',
   'about.canyon':   'Kanioni i Rugovës',
   'about.founded':  'E themeluar',

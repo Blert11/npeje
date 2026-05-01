@@ -1,0 +1,110 @@
+/* ============================================================
+   Navbar v9 — Mobile: lang left of logo + "npeje.com" text
+   Add this to the END of your existing Navbar.css
+   (overrides the @media blocks)
+   ============================================================ */
+
+/* Show the mobile-specific elements */
+.navbar__mobile-lang { display: none; }
+.navbar__mobile-brand-text { display: none; }
+
+@media (max-width: 768px) {
+  .navbar { height: 56px; }
+  .navbar__top-stripe { height: 4px; }
+
+  .navbar__inner {
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 3px;
+  }
+
+  /* Left side: lang + logo + "npeje.com" */
+  .navbar__left-mobile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Show mobile lang switcher (left of logo) */
+  .navbar__mobile-lang {
+    display: flex;
+  }
+  .navbar__mobile-lang-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  .navbar--solid .navbar__mobile-lang-btn {
+    background: var(--gray-100);
+    border-color: var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .navbar__logo-img { height: 32px; width: 32px; }
+
+  /* Show "npeje.com" beside logo on mobile */
+  .navbar__mobile-brand-text {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .navbar--transparent .navbar__mobile-brand-text { color: #fff; }
+  .navbar--solid .navbar__mobile-brand-text { color: var(--gray-900); }
+  .navbar__mobile-brand-text span { opacity: 0.5; font-weight: 600; }
+
+  /* Hide desktop elements */
+  .navbar__links { display: none; }
+  .navbar__right { display: none; }
+
+  /* Mobile lang dropdown */
+  .navbar__mobile-lang-menu {
+    position: absolute;
+    top: 52px;
+    left: 12px;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border: 1px solid var(--gray-100);
+    min-width: 140px;
+    z-index: 200;
+    overflow: hidden;
+  }
+  .navbar__mobile-lang-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--gray-700);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: background 0.12s;
+  }
+  .navbar__mobile-lang-item:hover { background: var(--gray-50); }
+  .navbar__mobile-lang-item.active { background: var(--gray-50); font-weight: 600; color: var(--gray-900); }
+  .navbar__mobile-lang-item > span:first-child {
+    display: inline-block; width: 20px; text-align: center; font-size: 16px;
+  }
+}
+
+/* Desktop: hide mobile-specific elements */
+@media (min-width: 769px) {
+  .navbar__left-mobile { display: contents; }
+  .navbar__mobile-lang { display: none !important; }
+  .navbar__mobile-brand-text { display: none !important; }
+}

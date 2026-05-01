@@ -13,9 +13,16 @@ const safeJson = (val, fallback = null) => {
   try { return JSON.parse(val); } catch { return fallback; }
 };
 
+// GET /api/listings
+// Supports sort modes:
+//   - smart    (default) — weighted mix: rating × views × completeness × featured
+//   - rated    — highest average rating first
+//   - viewed   — most views in last 30 days
+//   - open     — currently open places first
+//   - newest   — recently added
 exports.getListings = async (req, res, next) => {
   try {
-    const { page = 1, limit = 12, category, search, featured, location } = req.query;
+    const { page = 1, limit = 12, category, search, featured, location, sort = 'smart' } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
     const params = [];
     const conditions = ['l.is_active = 1'];
@@ -28,24 +35,63 @@ exports.getListings = async (req, res, next) => {
     const where = `WHERE ${conditions.join(' AND ')}`;
     const [[{ total }]] = await db.query(`SELECT COUNT(*) AS total FROM listings l ${where}`, params);
 
+    // Sort clause — uses aliases from the outer SELECT which is safe
+    // because we wrap the aggregate query as a subquery (t.*)
+    let orderBy;
+    switch (sort) {
+      case 'rated':
+        orderBy = 't.avg_rating DESC, t.review_count DESC';
+        break;
+      case 'viewed':
+        orderBy = 't.view_count_30d DESC, t.avg_rating DESC';
+        break;
+      case 'newest':
+        orderBy = 't.created_at DESC';
+        break;
+      case 'smart':
+      default:
+        orderBy = `
+          (
+            (CASE WHEN t.is_featured = 1 THEN 5 ELSE 0 END) +
+            (COALESCE(t.avg_rating, 0) * LOG(t.review_count + 2)) +
+            (LEAST(t.view_count_30d, 1000) / 100.0) +
+            (CASE WHEN CHAR_LENGTH(t.description) > 200 THEN 1 ELSE 0 END) +
+            (CASE WHEN t.image_count > 2 THEN 1 ELSE 0 END)
+          ) DESC,
+          t.avg_rating DESC
+        `;
+    }
+
+    // Wrap aggregate query as subquery so column aliases are usable in ORDER BY
     const [listings] = await db.query(`
-      SELECT
-        l.id, l.title, l.slug, l.category, l.short_desc, l.location,
-        l.features, l.opening_hours, l.is_featured, l.owner_id,
-        COALESCE(AVG(r.rating), 0) AS avg_rating,
-        COUNT(DISTINCT r.id)       AS review_count,
-        (SELECT url FROM images WHERE listing_id = l.id AND is_cover = 1 LIMIT 1) AS cover_image
-      FROM listings l
-      LEFT JOIN reviews r ON r.listing_id = l.id AND r.is_visible = 1
-      ${where}
-      GROUP BY l.id
-      ORDER BY l.is_featured DESC, avg_rating DESC
+      SELECT t.* FROM (
+        SELECT
+          l.id, l.title, l.slug, l.category, l.short_desc, l.location,
+          l.lat, l.lng, l.features, l.opening_hours, l.is_featured, l.owner_id,
+          l.created_at, l.description,
+          COALESCE(AVG(r.rating), 0) AS avg_rating,
+          COUNT(DISTINCT r.id)       AS review_count,
+          COALESCE((
+            SELECT COUNT(*) FROM listing_views v
+            WHERE v.listing_id = l.id
+            AND v.viewed_at > DATE_SUB(NOW(), INTERVAL 30 DAY)
+          ), 0) AS view_count_30d,
+          COALESCE((SELECT COUNT(*) FROM images i WHERE i.listing_id = l.id), 0) AS image_count,
+          (SELECT url FROM images WHERE listing_id = l.id AND is_cover = 1 LIMIT 1) AS cover_image
+        FROM listings l
+        LEFT JOIN reviews r ON r.listing_id = l.id AND r.is_visible = 1
+        ${where}
+        GROUP BY l.id
+      ) t
+      ORDER BY ${orderBy}
       LIMIT ? OFFSET ?
     `, [...params, parseInt(limit), offset]);
 
     listings.forEach(l => {
       l.features      = safeJson(l.features, []);
       l.opening_hours = safeJson(l.opening_hours, null);
+      // Strip heavy description from list view
+      delete l.description;
     });
 
     return paginate(res, listings, total, page, limit);
@@ -80,11 +126,11 @@ exports.getListing = async (req, res, next) => {
 
     const [reviews] = await db.query(`
       SELECT r.id, r.rating, r.comment, r.created_at,
-             u.name AS user_name, u.avatar AS user_avatar
+             u.id AS user_id, u.name AS user_name, u.avatar AS user_avatar
       FROM reviews r
       JOIN users u ON u.id = r.user_id
       WHERE r.listing_id = ? AND r.is_visible = 1
-      ORDER BY r.created_at DESC LIMIT 10
+      ORDER BY r.created_at DESC LIMIT 20
     `, [listing.id]);
     listing.reviews = reviews;
 
@@ -97,11 +143,11 @@ exports.getListing = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// CREATE — controller-level validation for clear errors
 exports.createListing = async (req, res, next) => {
   try {
     const {
       title, category, description, short_desc, location,
+      lat, lng,
       features, contact_info, opening_hours, menu_url,
       is_featured, owner_id, images,
     } = req.body;
@@ -118,11 +164,14 @@ exports.createListing = async (req, res, next) => {
     const [result] = await db.query(`
       INSERT INTO listings
         (title, slug, category, description, short_desc, location,
-         features, contact_info, opening_hours, menu_url, is_featured, owner_id)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+         lat, lng, features, contact_info, opening_hours, menu_url,
+         is_featured, owner_id)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     `, [
       title.trim(), slug, category, description.trim(),
       short_desc?.trim() || null, location.trim(),
+      lat !== undefined && lat !== null && lat !== '' ? parseFloat(lat) : null,
+      lng !== undefined && lng !== null && lng !== '' ? parseFloat(lng) : null,
       JSON.stringify(Array.isArray(features) ? features : []),
       JSON.stringify(contact_info && typeof contact_info === 'object' ? contact_info : {}),
       opening_hours && typeof opening_hours === 'object' ? JSON.stringify(opening_hours) : null,
@@ -158,6 +207,7 @@ exports.updateListing = async (req, res, next) => {
   try {
     const { id } = req.params;
     const allowed = ['title','category','description','short_desc','location',
+                     'lat','lng',
                      'features','contact_info','opening_hours','menu_url',
                      'is_featured','is_active','owner_id'];
     const updates = {};
@@ -169,13 +219,14 @@ exports.updateListing = async (req, res, next) => {
       updates.opening_hours = updates.opening_hours && typeof updates.opening_hours === 'object'
         ? JSON.stringify(updates.opening_hours) : null;
     }
+    if (updates.lat !== undefined) updates.lat = updates.lat !== null && updates.lat !== '' ? parseFloat(updates.lat) : null;
+    if (updates.lng !== undefined) updates.lng = updates.lng !== null && updates.lng !== '' ? parseFloat(updates.lng) : null;
 
     if (Object.keys(updates).length) {
       const sets = Object.keys(updates).map(k => `\`${k}\` = ?`).join(', ');
       await db.query(`UPDATE listings SET ${sets} WHERE id = ?`, [...Object.values(updates), id]);
     }
 
-    // Replace image list when provided
     if (Array.isArray(req.body.images)) {
       await db.query('DELETE FROM images WHERE listing_id = ?', [id]);
       const imgValues = req.body.images

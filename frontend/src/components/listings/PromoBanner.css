@@ -87,7 +87,6 @@
   transform: translateY(-1px);
 }
 
-/* Media side (adventures banner) */
 .promo-banner__media {
   position: relative;
   height: 100%;
@@ -143,7 +142,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
   animation: pulse 2s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -169,12 +167,8 @@
   white-space: nowrap;
 }
 
-/* ─── MOBILE: stack content above media, keep it compact ─── */
 @media (max-width: 900px) {
-  .promo-banner__card {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
+  .promo-banner__card { grid-template-columns: 1fr; min-height: auto; }
   .promo-banner__card--adv {
     grid-template-rows: auto 200px;
   }
@@ -189,22 +183,12 @@
 }
 
 @media (max-width: 560px) {
-  .promo-banner__card--adv {
-    grid-template-rows: auto 160px;
-  }
+  .promo-banner__card--adv { grid-template-rows: auto 160px; }
   .promo-banner__media { min-height: 160px; }
   .promo-banner__title { font-size: 22px; }
   .promo-banner__desc  { font-size: 14px; }
-
-  .promo-banner__card--taxi {
-    min-height: 0;
-    padding: 24px 20px;
-  }
-  .taxi-cta {
-    padding: 12px 14px;
-    width: 100%;
-    box-sizing: border-box;
-  }
+  .promo-banner__card--taxi { min-height: 0; padding: 24px 20px; }
+  .taxi-cta { padding: 12px 14px; width: 100%; box-sizing: border-box; }
   .taxi-cta small { font-size: 10px; }
   .taxi-cta strong { font-size: 14px; }
 }

@@ -1,10 +1,13 @@
-/* Wrapper needs z-index boost when open */
+/* Wrapper — creates a stacking context when open */
 .searchbar {
   position: relative;
   width: 100%;
+  z-index: 1;
 }
+
+/* When results are showing, boost z-index way above chips below (which have z-index 2 max) */
 .searchbar--open {
-  z-index: 150;
+  z-index: 500;
 }
 
 .searchbar__input-wrap {
@@ -16,6 +19,7 @@
   box-shadow: 0 10px 40px rgba(0,0,0,0.15);
   transition: box-shadow var(--transition);
   position: relative;
+  z-index: 2;
 }
 .searchbar--open .searchbar__input-wrap {
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -55,7 +59,6 @@
   justify-content: center;
   border-radius: 50%;
   color: var(--gray-400);
-  font-size: 20px;
   background: var(--gray-100);
   margin-right: 6px;
   flex-shrink: 0;
@@ -73,7 +76,7 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Dropdown — properly stacked above everything else */
+/* Dropdown — explicit very-high z-index + backdrop isolation */
 .searchbar__dropdown {
   position: absolute;
   top: 100%;
@@ -82,11 +85,15 @@
   margin-top: 4px;
   background: #fff;
   border-radius: var(--radius-lg);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
   max-height: 420px;
   overflow-y: auto;
-  z-index: 200;
+  z-index: 501;
   animation: fadeUp 0.2s ease;
+  list-style: none;
+  padding: 0;
+  /* Force its own painting context so it sits above siblings */
+  isolation: isolate;
 }
 
 .searchbar__result {
@@ -135,6 +142,9 @@
   font-size: 12px;
   color: var(--gray-500);
   text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 @media (max-width: 768px) {

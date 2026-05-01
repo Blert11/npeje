@@ -1,6 +1,5 @@
 // ============================================================
-// ADD TO YOUR EXISTING backend/routes/ SETUP
-// These are the NEW routes needed for v3
+// backend/routes/v3-additions.js — v6 FIXED
 // ============================================================
 
 // ─── upload.js ──────────────────────────────────────────────
@@ -17,11 +16,11 @@ const menuRouter = require('express').Router();
 const menuCtrl   = require('../controllers/menuController');
 
 // Public read
-menuRouter.get('/listings/:listingId/menu',     menuCtrl.getMenu);
+menuRouter.get('/listings/:listingId/menu', menuCtrl.getMenu);
 
-// Admin-only writes
-menuRouter.post('/listings/:listingId/menu',    authenticate, authorize('admin'), menuCtrl.createMenuItem);
-menuRouter.put('/menu/:id',                     authenticate, authorize('admin'), menuCtrl.updateMenuItem);
-menuRouter.delete('/menu/:id',                  authenticate, authorize('admin'), menuCtrl.deleteMenuItem);
+// Admin-only writes — FIXED: use v6 function names (createItem, updateItem, deleteItem)
+menuRouter.post('/listings/:listingId/menu', authenticate, authorize('admin','business'), menuCtrl.createItem);
+menuRouter.put('/menu/:id',                  authenticate, authorize('admin','business'), menuCtrl.updateItem);
+menuRouter.delete('/menu/:id',               authenticate, authorize('admin','business'), menuCtrl.deleteItem);
 
 module.exports = { uploadRouter, menuRouter };

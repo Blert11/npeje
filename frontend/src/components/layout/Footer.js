@@ -8,37 +8,36 @@ export default function Footer() {
       <div className="container footer__inner">
         <div className="footer__brand">
           <Link to="/" className="footer__logo">
-            <img src={logo} alt="npeje.com" />
+            <img src={logo} alt="npeje.com" className="footer__logo-img" />
             <span>npeje<span>.com</span></span>
           </Link>
-          <p>Discover Peja &amp; Rugova Valley — Kosovo's hidden gem.</p>
-          <span className="footer__tag">Part of Spreht</span>
+          <p>Discover the best of Peja and the breathtaking Rugova Valley.</p>
         </div>
+
         <div className="footer__links">
-          <div>
+          <div className="footer__col">
             <h4>Explore</h4>
+            <Link to="/listings">All Listings</Link>
             <Link to="/listings?category=hotels">Hotels</Link>
             <Link to="/listings?category=restaurants">Restaurants</Link>
-            <Link to="/listings?category=fast_food">Fast Food</Link>
-            <Link to="/listings?category=cafes">Cafés</Link>
             <Link to="/listings?category=activities">Activities</Link>
           </div>
-          <div>
+          <div className="footer__col">
             <h4>Company</h4>
-            <Link to="/contact">Contact us</Link>
-            <Link to="/contact">Add your business</Link>
-            <Link to="/map">Map view</Link>
+            <Link to="/contact">Contact Us</Link>
+            <Link to="/contact">Add your Business</Link>
           </div>
-          <div>
+          <div className="footer__col">
             <h4>Account</h4>
-            <Link to="/login">Sign in</Link>
+            <Link to="/login">Sign In</Link>
             <Link to="/register">Register</Link>
           </div>
         </div>
       </div>
+
       <div className="footer__bottom">
-        <div className="container">
-          <span>© {new Date().getFullYear()} npeje.com — Made with ♥ in Kosovo.</span>
+        <div className="container footer__bottom-inner">
+          <span>&copy; {new Date().getFullYear()} npeje.com — Made with ♥ in Kosovo</span>
         </div>
       </div>
     </footer>

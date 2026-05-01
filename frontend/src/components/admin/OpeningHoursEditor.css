@@ -1,0 +1,81 @@
+.oh-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.oh-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+.oh-row--closed { opacity: 0.5; }
+
+.oh-row__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  min-width: 120px;
+}
+.oh-row__toggle input { cursor: pointer; }
+.oh-row__day {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.oh-row__times {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.oh-row__times input[type="time"] {
+  padding: 4px 8px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm, 4px);
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+}
+.oh-row__times span {
+  color: var(--gray-400);
+  font-size: 12px;
+}
+
+.oh-row__copy {
+  padding: 3px 8px;
+  background: var(--gray-200);
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-600);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.oh-row__copy:hover {
+  background: var(--gray-300);
+}
+
+.oh-row__closed-label {
+  font-size: 12px;
+  color: var(--gray-400);
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .oh-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .oh-row__times { flex-wrap: wrap; }
+}

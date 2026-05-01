@@ -1,93 +1,129 @@
-import { useState, useEffect } from 'react';
-import api from '../../services/api';
+import { useEffect, useState, useRef } from 'react';
+import { menuService } from '../../services/api';
 import { resolveUrl } from '../common/ImageUpload';
+import Icon from '../common/Icon';
 import { useT } from '../../i18n';
 import './MenuViewer.css';
 
 export default function MenuViewer({ listingId, listingName, onClose }) {
   const { t } = useT();
-  const [menu,    setMenu]    = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [loading,    setLoading]    = useState(true);
+  const [ready,      setReady]      = useState(false); // prevents flicker
+  const [activeTab,  setActiveTab]  = useState(null);
+  const panelRef = useRef(null);
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    api.get(`/listings/${listingId}/menu`)
-      .then(({ data }) => setMenu(data.data))
-      .catch(() => setMenu({ sections: {}, items: [] }))
-      .finally(() => setLoading(false));
-    return () => { document.body.style.overflow = ''; };
+    menuService.getItems(listingId)
+      .then(({ data }) => {
+        const cats = (data.data?.categories || []).filter(c => c.items?.length > 0);
+        setCategories(cats);
+        if (cats.length) setActiveTab(cats[0].id ?? 'uncategorized');
+      })
+      .catch(() => setCategories([]))
+      .finally(() => {
+        setLoading(false);
+        // Delay ready by 1 frame so the DOM settles before we animate
+        requestAnimationFrame(() => setReady(true));
+      });
   }, [listingId]);
 
   useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    const handleEsc = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  const sections = menu?.sections || {};
-  const sectionKeys = Object.keys(sections);
-  const isEmpty = !loading && (!menu?.items || menu.items.length === 0);
+  // Block body scroll while open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  const scrollToCategory = (catId) => {
+    setActiveTab(catId ?? 'uncategorized');
+    const id = `menu-cat-${catId ?? 'uncategorized'}`;
+    const el = document.getElementById(id);
+    if (el && panelRef.current) {
+      panelRef.current.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <div className="menu-viewer" onClick={onClose}>
-      <div className="menu-viewer__panel" onClick={(e) => e.stopPropagation()}>
-        <div className="menu-viewer__header">
+    <div
+      className={`menu-viewer-overlay ${ready ? 'menu-viewer-overlay--visible' : ''}`}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className={`menu-viewer ${ready ? 'menu-viewer--visible' : ''}`}>
+        <header className="menu-viewer__header">
           <div>
-            <span className="menu-viewer__eyebrow">{listingName}</span>
-            <h2>{t('menu.title')}</h2>
+            <small>{t('menu.title')}</small>
+            <h2>{listingName}</h2>
           </div>
-          <button className="menu-viewer__close" onClick={onClose} aria-label="Close">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+          <button className="menu-viewer__close" onClick={onClose} aria-label="Close" type="button">
+            <Icon name="close" size={20} />
           </button>
-        </div>
+        </header>
 
-        <div className="menu-viewer__body">
+        {!loading && categories.length > 1 && (
+          <div className="menu-viewer__tabs">
+            {categories.map(cat => {
+              const key = cat.id ?? 'uncategorized';
+              return (
+                <button key={key}
+                  className={`menu-tab ${activeTab === key ? 'active' : ''}`}
+                  onClick={() => scrollToCategory(cat.id)}
+                  type="button">
+                  {cat.name}
+                  <span className="menu-tab__count">{cat.items?.length || 0}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="menu-viewer__body" ref={panelRef}>
           {loading && (
-            <div className="menu-viewer__loading">
-              <div className="skeleton" style={{ height: 120, borderRadius: 'var(--radius-lg)', marginBottom: 12 }} />
-              <div className="skeleton" style={{ height: 120, borderRadius: 'var(--radius-lg)', marginBottom: 12 }} />
-              <div className="skeleton" style={{ height: 120, borderRadius: 'var(--radius-lg)' }} />
-            </div>
+            <div className="menu-viewer__loading">{t('common.loading')}</div>
           )}
 
-          {isEmpty && (
+          {!loading && categories.length === 0 && (
             <div className="menu-viewer__empty">
-              <span>🍽️</span>
+              <Icon name="menu_book" size={40} strokeWidth={1.5} />
               <p>{t('menu.empty')}</p>
             </div>
           )}
 
-          {!loading && sectionKeys.map(section => (
-            <div key={section} className="menu-section">
-              <h3 className="menu-section__title">{section}</h3>
-              <div className="menu-section__items">
-                {sections[section].map((item, i) => (
-                  <div key={item.id}
-                    className="menu-item animate-fade-up"
-                    style={{ animationDelay: `${i * 40}ms` }}>
-                    {item.image && (
-                      <div className="menu-item__img">
-                        <img src={resolveUrl(item.image)} alt={item.name} loading="lazy" />
-                      </div>
-                    )}
-                    <div className="menu-item__body">
-                      <div className="menu-item__top">
-                        <h4 className="menu-item__name">{item.name}</h4>
-                        <span className="menu-item__price">
-                          {item.currency || '€'}{Number(item.price).toFixed(2)}
-                        </span>
-                      </div>
-                      {item.description && (
-                        <p className="menu-item__desc">{item.description}</p>
+          {categories.map(cat => {
+            const key = cat.id ?? 'uncategorized';
+            return (
+              <section key={key} id={`menu-cat-${key}`} className="menu-viewer__cat-section">
+                <h3 className="menu-viewer__cat-title">{cat.name}</h3>
+                <div className="menu-viewer__items">
+                  {cat.items?.map(item => (
+                    <div key={item.id} className="mv-item">
+                      {item.image && (
+                        <div className="mv-item__img">
+                          <img src={resolveUrl(item.image)} alt={item.name} loading="lazy" />
+                        </div>
                       )}
+                      <div className="mv-item__body">
+                        <div className="mv-item__header">
+                          <strong>{item.name}</strong>
+                          <span className="mv-item__price">
+                            {Number(item.price).toFixed(2)} {item.currency || 'EUR'}
+                          </span>
+                        </div>
+                        {item.description && (
+                          <p className="mv-item__desc">{item.description}</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       </div>
     </div>

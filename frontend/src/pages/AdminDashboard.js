@@ -9,7 +9,9 @@ import { useAuth } from '../hooks/useAuth';
 import { useT } from '../i18n';
 import { formatDate, getCategoryConfig, CATEGORIES } from '../utils/helpers';
 import ImageUpload, { resolveUrl } from '../components/common/ImageUpload';
+import Icon from '../components/common/Icon';
 import MenuEditor from '../components/admin/MenuEditor';
+import OpeningHoursEditor from '../components/admin/OpeningHoursEditor';
 import StatisticsPage from './StatisticsPage';
 import './AdminDashboard.css';
 
@@ -19,12 +21,12 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   const NAV = [
-    { to: '/admin',            label: '📊 ' + t('admin.overview'),  end: true },
-    { to: '/admin/listings',   label: '🏨 ' + t('admin.listings') },
-    { to: '/admin/users',      label: '👥 ' + t('admin.users') },
-    { to: '/admin/offers',     label: '🎁 ' + t('admin.offers') },
-    { to: '/admin/contacts',   label: '✉️ ' + t('admin.contacts') },
-    { to: '/admin/statistics', label: '📈 ' + t('admin.analytics') },
+    { to: '/admin',            label: t('admin.overview'),  icon: 'grid', end: true },
+    { to: '/admin/listings',   label: t('admin.listings'),  icon: 'hotels' },
+    { to: '/admin/users',      label: t('admin.users'),     icon: 'user' },
+    { to: '/admin/offers',     label: t('admin.offers'),    icon: 'zap' },
+    { to: '/admin/contacts',   label: t('admin.contacts'),  icon: 'mail' },
+    { to: '/admin/statistics', label: t('admin.analytics'), icon: 'sparkles' },
   ];
 
   return (
@@ -34,10 +36,16 @@ export default function AdminDashboard() {
           <Link to="/">npeje.com <small>admin</small></Link>
         </div>
         <nav className="admin-sidebar__nav">
+          {/* Home link — goes to public site */}
+          <a href="/" className="admin-nav-item">
+            <Icon name="compass" size={18} />
+            <span>Home</span>
+          </a>
           {NAV.map(n => (
             <NavLink key={n.to} to={n.to} end={n.end}
               className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}>
-              {n.label}
+              <Icon name={n.icon} size={18} />
+              <span>{n.label}</span>
             </NavLink>
           ))}
         </nav>
@@ -78,13 +86,13 @@ function AdminOverview() {
     <div>
       <div className="stats-grid">
         {[
-          { label: 'Listings',    value: data.totals.total_listings, icon: '🏨' },
-          { label: 'Users',       value: data.totals.total_users,    icon: '👥' },
-          { label: 'Reviews',     value: data.totals.total_reviews,  icon: '⭐' },
-          { label: 'Views (30d)', value: data.totals.views_30d,      icon: '👁' },
+          { label: 'Listings',    value: data.totals.total_listings, icon: 'hotels' },
+          { label: 'Users',       value: data.totals.total_users,    icon: 'user' },
+          { label: 'Reviews',     value: data.totals.total_reviews,  icon: 'star' },
+          { label: 'Views (30d)', value: data.totals.views_30d,      icon: 'sparkles' },
         ].map(s => (
           <div key={s.label} className="stat-card">
-            <span className="stat-card__icon">{s.icon}</span>
+            <span className="stat-card__icon"><Icon name={s.icon} size={24} /></span>
             <div>
               <span className="stat-card__value">{Number(s.value).toLocaleString()}</span>
               <span className="stat-card__label">{s.label}</span>
@@ -145,12 +153,15 @@ function AdminOverview() {
   );
 }
 
+// ─── LISTINGS ──────────────────────────────────────────────
 function AdminListings() {
   const [listings, setListings] = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing,  setEditing]  = useState(null);
   const [menuFor,  setMenuFor]  = useState(null);
+  const [filterCat, setFilterCat] = useState('');
+  const [search,   setSearch]   = useState('');
 
   const load = () => {
     setLoading(true);
@@ -160,33 +171,59 @@ function AdminListings() {
   };
   useEffect(load, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Deactivate this listing?')) return;
-    await listingService.delete(id);
-    load();
-  };
+  const filtered = listings.filter(l => {
+    if (filterCat && l.category !== filterCat) return false;
+    if (search && !l.title.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
 
   const toggleActive = async (listing) => {
-    const newValue = Number(listing.is_active) === 1 ? 0 : 1;
-    await listingService.update(listing.id, { is_active: newValue });
-    load();
+    try {
+      const newValue = Number(listing.is_active) === 1 ? 0 : 1;
+      await listingService.update(listing.id, { is_active: newValue });
+      load();
+    } catch (err) {
+      alert('Failed to update: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   return (
     <div>
       <div className="admin-page-header">
-        <h2>Listings</h2>
+        <h2>Listings ({filtered.length})</h2>
         <button className="btn btn-primary btn-sm"
           onClick={() => { setEditing(null); setShowForm(true); }}>
-          + New Listing
+          <Icon name="upload" size={14} />
+          New Listing
         </button>
+      </div>
+
+      <div className="admin-toolbar">
+        <div className="admin-toolbar__search">
+          <Icon name="search" size={16} className="admin-toolbar__search-icon" />
+          <input type="text" placeholder="Search listings…"
+            value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <div className="admin-toolbar__filters">
+          <button className={`filter-chip ${!filterCat ? 'active' : ''}`}
+            onClick={() => setFilterCat('')}>All</button>
+          {CATEGORIES.map(c => (
+            <button key={c.id}
+              className={`filter-chip ${filterCat === c.id ? 'active' : ''}`}
+              style={{ '--chip-color': c.color }}
+              onClick={() => setFilterCat(c.id)}>
+              <Icon name={c.iconName} size={12} />
+              {c.id.replace('_', ' ')}
+            </button>
+          ))}
+        </div>
       </div>
 
       {showForm && (
         <ListingFormModal
           listing={editing}
-          onClose={() => setShowForm(false)}
-          onSaved={() => { setShowForm(false); load(); }} />
+          onClose={() => { setShowForm(false); setEditing(null); }}
+          onSaved={() => { setShowForm(false); setEditing(null); load(); }} />
       )}
 
       {menuFor && (
@@ -196,78 +233,131 @@ function AdminListings() {
           onClose={() => setMenuFor(null)} />
       )}
 
-      <div className="admin-table-card">
-        <table className="admin-table">
-          <thead>
-            <tr><th>Title</th><th>Category</th><th>Featured</th><th>Status</th><th>Actions</th></tr>
-          </thead>
-          <tbody>
-            {loading
-              ? <tr><td colSpan={5} style={{ textAlign:'center', padding:'32px', color:'var(--gray-400)' }}>Loading…</td></tr>
-              : listings.map(l => {
-                const cat        = getCategoryConfig(l.category);
-                const isActive   = Number(l.is_active) === 1;
-                const hasMenu    = ['restaurants','fast_food','cafes'].includes(l.category);
-                return (
-                  <tr key={l.id}>
-                    <td><strong>{l.title}</strong></td>
-                    <td><span className="badge badge-primary">{cat.icon} {l.category.replace('_',' ')}</span></td>
-                    <td>{l.is_featured ? '⭐' : '—'}</td>
-                    <td>
-                      <span className={`status-dot ${isActive ? 'active' : 'inactive'}`}>
-                        {isActive ? 'Active' : 'Inactive'}
+      {loading ? (
+        <div className="admin-loading">Loading…</div>
+      ) : filtered.length === 0 ? (
+        <div className="admin-empty-state">
+          <Icon name="search" size={40} strokeWidth={1.5} />
+          <p>No listings match your filters</p>
+        </div>
+      ) : (
+        <div className="listing-cards-grid">
+          {filtered.map(l => {
+            const cat      = getCategoryConfig(l.category);
+            const isActive = Number(l.is_active) === 1;
+            const hasMenu  = ['restaurants','fast_food','cafes'].includes(l.category);
+            const cover    = l.cover_image;
+            return (
+              <div key={l.id} className="listing-admin-card" style={{ '--cat-color': cat.color }}>
+                <div className="listing-admin-card__img">
+                  {cover
+                    ? <img src={resolveUrl(cover)} alt={l.title} />
+                    : <Icon name={cat.iconName} size={36} />}
+                  <div className="listing-admin-card__badges">
+                    {l.is_featured === 1 && (
+                      <span className="listing-admin-card__featured">
+                        <Icon name="star" size={10} /> Featured
                       </span>
-                    </td>
-                    <td>
-                      <div className="table-actions">
-                        <button className="btn btn-ghost btn-sm"
-                          onClick={() => { setEditing(l); setShowForm(true); }}>Edit</button>
-                        {hasMenu && (
-                          <button className="btn btn-ghost btn-sm"
-                            onClick={() => setMenuFor(l)}>Menu</button>
-                        )}
-                        <button className="btn btn-ghost btn-sm"
-                          onClick={() => toggleActive(l)}>
-                          {isActive ? 'Disable' : 'Enable'}
-                        </button>
-                        <Link to={`/listings/${l.slug}`} target="_blank"
-                          className="btn btn-ghost btn-sm">View</Link>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            }
-          </tbody>
-        </table>
-      </div>
+                    )}
+                    <span className={`listing-admin-card__status ${isActive ? 'active' : 'inactive'}`}>
+                      <span className="dot" />
+                      {isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                </div>
+                <div className="listing-admin-card__body">
+                  <span className="listing-admin-card__cat">
+                    <Icon name={cat.iconName} size={12} />
+                    {l.category.replace('_', ' ')}
+                  </span>
+                  <h3 className="listing-admin-card__title">{l.title}</h3>
+                  <p className="listing-admin-card__loc">
+                    <Icon name="map_pin" size={12} /> {l.location}
+                  </p>
+                </div>
+                <div className="listing-admin-card__actions">
+                  <button className="mini-btn" onClick={() => { setEditing(l); setShowForm(true); }}>Edit</button>
+                  {hasMenu && <button className="mini-btn" onClick={() => setMenuFor(l)}>Menu</button>}
+                  <button className="mini-btn" onClick={() => toggleActive(l)}>
+                    {isActive ? 'Disable' : 'Enable'}
+                  </button>
+                  <Link to={`/listings/${l.slug}`} target="_blank" className="mini-btn">View</Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
-// ─── FIXED Listing Form ────────────────────────────────────
+// ─── LISTING FORM — fetches full data when editing ─────────
 function ListingFormModal({ listing, onClose, onSaved }) {
   const isEdit = !!listing;
 
   const [form, setForm] = useState({
-    title:        listing?.title        || '',
-    category:     listing?.category     || 'hotels',
-    description:  listing?.description  || '',
-    short_desc:   listing?.short_desc   || '',
-    location:     listing?.location     || '',
-    is_featured:  listing?.is_featured  || 0,
-    features:     Array.isArray(listing?.features) ? listing.features.join(', ') : '',
+    title:             listing?.title        || '',
+    category:          listing?.category     || 'hotels',
+    description:       listing?.description  || '',
+    short_desc:        listing?.short_desc   || '',
+    location:          listing?.location     || '',
+    is_featured:       listing?.is_featured  || 0,
+    features:          Array.isArray(listing?.features) ? listing.features.join(', ') : '',
     contact_phone:     listing?.contact_info?.phone     || '',
     contact_email:     listing?.contact_info?.email     || '',
     contact_website:   listing?.contact_info?.website   || '',
     contact_instagram: listing?.contact_info?.instagram || '',
   });
 
-  const initialImages = listing?.images?.map(i => i.url) || [];
-  const [coverImage,  setCoverImage]  = useState(initialImages[0] || '');
-  const [extraImages, setExtraImages] = useState(initialImages.slice(1));
-  const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState('');
+  const [coverImage,    setCoverImage]    = useState('');
+  const [extraImages,   setExtraImages]   = useState([]);
+  const [openingHours,  setOpeningHours]  = useState(null);
+  const [ownerId,       setOwnerId]       = useState('');
+  const [businessUsers, setBusinessUsers] = useState([]);
+  const [loading,       setLoading]       = useState(false);
+  const [loadingFull,   setLoadingFull]   = useState(isEdit);
+  const [error,         setError]         = useState('');
+
+  // Fetch full listing data when editing (list view strips images, description, etc.)
+  useEffect(() => {
+    if (isEdit && listing?.slug) {
+      listingService.getBySlug(listing.slug)
+        .then(({ data }) => {
+          const full = data.data;
+          if (!full) return;
+          setForm(prev => ({
+            ...prev,
+            description:       full.description || prev.description,
+            short_desc:        full.short_desc  || prev.short_desc,
+            features:          Array.isArray(full.features) ? full.features.join(', ') : prev.features,
+            contact_phone:     full.contact_info?.phone     || '',
+            contact_email:     full.contact_info?.email     || '',
+            contact_website:   full.contact_info?.website   || '',
+            contact_instagram: full.contact_info?.instagram || '',
+          }));
+          if (full.images?.length) {
+            setCoverImage(full.images[0]?.url || '');
+            setExtraImages(full.images.slice(1).map(i => i.url));
+          }
+          if (full.opening_hours) setOpeningHours(full.opening_hours);
+          if (full.owner_id)      setOwnerId(String(full.owner_id));
+        })
+        .catch(() => {})
+        .finally(() => setLoadingFull(false));
+    } else {
+      setLoadingFull(false);
+    }
+  }, [isEdit, listing?.slug]);
+
+  // Fetch business users for the owner dropdown
+  useEffect(() => {
+    adminService.getUsers()
+      .then(({ data }) => {
+        setBusinessUsers((data.data || []).filter(u => u.role === 'business'));
+      })
+      .catch(() => {});
+  }, []);
 
   const f = (name) => ({
     value: form[name],
@@ -295,6 +385,8 @@ function ListingFormModal({ listing, onClose, onSaved }) {
         location:    form.location.trim(),
         features:    form.features.split(',').map(s => s.trim()).filter(Boolean),
         is_featured: form.is_featured ? 1 : 0,
+        owner_id:    ownerId ? parseInt(ownerId) : null,
+        opening_hours: openingHours && Object.keys(openingHours).length ? openingHours : null,
         contact_info: {
           phone:     form.contact_phone?.trim()     || undefined,
           email:     form.contact_email?.trim()     || undefined,
@@ -321,135 +413,157 @@ function ListingFormModal({ listing, onClose, onSaved }) {
       <div className="modal-panel">
         <div className="modal-header">
           <h3>{isEdit ? 'Edit Listing' : 'New Listing'}</h3>
-          <button onClick={onClose} className="modal-close">×</button>
+          <button onClick={onClose} className="modal-close" type="button">
+            <Icon name="close" size={20} />
+          </button>
         </div>
-        <form className="modal-form" onSubmit={handleSubmit}>
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Title *</label>
-              <input className="form-input" required {...f('title')} />
+
+        {loadingFull ? (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--gray-400)' }}>
+            Loading listing data…
+          </div>
+        ) : (
+          <form className="modal-form" onSubmit={handleSubmit}>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Title *</label>
+                <input className="form-input" required {...f('title')} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Category *</label>
+                <select className="form-input" {...f('category')}>
+                  {CATEGORIES.map(c => (
+                    <option key={c.id} value={c.id}>{c.id.replace('_',' ')}</option>
+                  ))}
+                </select>
+              </div>
             </div>
+
             <div className="form-group">
-              <label className="form-label">Category *</label>
-              <select className="form-input" {...f('category')}>
-                {CATEGORIES.map(c => (
-                  <option key={c.id} value={c.id}>
-                    {c.icon} {c.id.replace('_',' ')}
-                  </option>
+              <label className="form-label">Short Description</label>
+              <input className="form-input" {...f('short_desc')} placeholder="One-line summary" />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Description *</label>
+              <textarea className="form-input" required rows={4} {...f('description')} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Location *</label>
+              <input className="form-input" required {...f('location')} placeholder="e.g. Rr. UCK 45, Pejë" />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Cover Image</label>
+              <ImageUpload value={coverImage} onChange={setCoverImage} aspectRatio="16/9" />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Additional Images</label>
+              <div className="image-grid">
+                {extraImages.map((url, idx) => (
+                  <ImageUpload key={idx} value={url}
+                    onChange={(newUrl) => {
+                      if (!newUrl) setExtraImages(prev => prev.filter((_, i) => i !== idx));
+                      else         setExtraImages(prev => prev.map((u, i) => i === idx ? newUrl : u));
+                    }}
+                    aspectRatio="4/3" />
+                ))}
+                {extraImages.length < 8 && (
+                  <ImageUpload value=""
+                    onChange={(url) => { if (url) setExtraImages(prev => [...prev, url]); }}
+                    aspectRatio="4/3" />
+                )}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Opening Hours</label>
+              <OpeningHoursEditor value={openingHours} onChange={setOpeningHours} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Features (comma-separated)</label>
+              <input className="form-input" {...f('features')}
+                placeholder="Free WiFi, Parking, Mountain View" />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Phone</label>
+                <input className="form-input" {...f('contact_phone')} placeholder="+383 …" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input className="form-input" type="email" {...f('contact_email')} />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Website</label>
+                <input className="form-input" {...f('contact_website')} placeholder="https://…" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Instagram</label>
+                <input className="form-input" {...f('contact_instagram')} placeholder="@handle" />
+              </div>
+            </div>
+
+            <label className="filter-checkbox">
+              <input type="checkbox" checked={!!form.is_featured}
+                onChange={e => setForm(p => ({ ...p, is_featured: e.target.checked ? 1 : 0 }))} />
+              Mark as Featured
+            </label>
+
+            {/* Business owner linking */}
+            <div className="form-group">
+              <label className="form-label">Business Owner</label>
+              <select className="form-input" value={ownerId}
+                onChange={e => setOwnerId(e.target.value)}>
+                <option value="">No owner (admin managed)</option>
+                {businessUsers.map(u => (
+                  <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
                 ))}
               </select>
+              <small style={{ fontSize: 12, color: 'var(--gray-400)', marginTop: 4, display: 'block' }}>
+                Links this listing to a business account for their analytics dashboard.
+              </small>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label className="form-label">Short Description</label>
-            <input className="form-input" {...f('short_desc')}
-              placeholder="One-line summary" />
-          </div>
+            {error && <div className="auth-error">{error}</div>}
 
-          <div className="form-group">
-            <label className="form-label">Description *</label>
-            <textarea className="form-input" required rows={4} {...f('description')} />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Location *</label>
-            <input className="form-input" required {...f('location')}
-              placeholder="e.g. Rr. UCK 45, Pejë" />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Cover Image *</label>
-            <ImageUpload
-              value={coverImage}
-              onChange={setCoverImage}
-              aspectRatio="16/9" />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Additional Images (optional)</label>
-            <div className="image-grid">
-              {extraImages.map((url, idx) => (
-                <ImageUpload
-                  key={idx}
-                  value={url}
-                  onChange={(newUrl) => {
-                    if (!newUrl) setExtraImages(prev => prev.filter((_, i) => i !== idx));
-                    else         setExtraImages(prev => prev.map((u, i) => i === idx ? newUrl : u));
-                  }}
-                  aspectRatio="4/3" />
-              ))}
-              {extraImages.length < 8 && (
-                <ImageUpload
-                  value=""
-                  onChange={(url) => { if (url) setExtraImages(prev => [...prev, url]); }}
-                  aspectRatio="4/3" />
-              )}
+            <div className="modal-footer">
+              <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'Saving…' : 'Save Listing'}
+              </button>
             </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Features (comma-separated)</label>
-            <input className="form-input" {...f('features')}
-              placeholder="Free WiFi, Parking, Mountain View" />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Phone</label>
-              <input className="form-input" {...f('contact_phone')} placeholder="+383 …" />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Email</label>
-              <input className="form-input" type="email" {...f('contact_email')} />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Website</label>
-              <input className="form-input" {...f('contact_website')} placeholder="https://…" />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Instagram handle</label>
-              <input className="form-input" {...f('contact_instagram')} placeholder="@handle" />
-            </div>
-          </div>
-
-          <label className="filter-checkbox">
-            <input type="checkbox" checked={!!form.is_featured}
-              onChange={e => setForm(p => ({ ...p, is_featured: e.target.checked ? 1 : 0 }))} />
-            Mark as Featured
-          </label>
-
-          {error && <div className="auth-error">{error}</div>}
-
-          <div className="modal-footer">
-            <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Saving…' : 'Save Listing'}
-            </button>
-          </div>
-        </form>
+          </form>
+        )}
       </div>
     </div>
   );
 }
 
 function AdminUsers() {
-  const [users,    setUsers]    = useState([]);
+  const [users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [newUser, setNewUser] = useState({ name:'', email:'', password:'', role:'user' });
-  const [saving,  setSaving]  = useState(false);
-  const [err,     setErr]     = useState('');
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState('');
 
   const load = () => adminService.getUsers().then(r => setUsers(r.data.data || []));
   useEffect(() => { load(); }, []);
 
   const handleCreate = async (e) => {
     e.preventDefault(); setSaving(true); setErr('');
-    try { await adminService.createUser(newUser); setShowForm(false); load(); setNewUser({name:'',email:'',password:'',role:'user'}); }
-    catch (er) { setErr(er.response?.data?.message || 'Error'); }
+    try {
+      await adminService.createUser(newUser);
+      setShowForm(false); load();
+      setNewUser({name:'',email:'',password:'',role:'user'});
+    } catch (er) { setErr(er.response?.data?.message || 'Error'); }
     finally { setSaving(false); }
   };
 
@@ -622,7 +736,9 @@ function OfferFormModal({ offer, listings, onClose, onSaved }) {
       <div className="modal-panel" style={{ maxWidth: 520 }}>
         <div className="modal-header">
           <h3>{isEdit ? 'Edit Offer' : 'New Offer'}</h3>
-          <button onClick={onClose} className="modal-close">×</button>
+          <button onClick={onClose} className="modal-close" type="button">
+            <Icon name="close" size={20} />
+          </button>
         </div>
         <form className="modal-form" onSubmit={handleSubmit}>
           <div className="form-group">

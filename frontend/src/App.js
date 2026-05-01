@@ -11,11 +11,11 @@ import Footer from './components/layout/Footer';
 import HomePage          from './pages/HomePage';
 import ListingsPage      from './pages/ListingsPage';
 import ListingDetailPage from './pages/ListingDetailPage';
-import MapPage           from './pages/MapPage';
 import ContactPage       from './pages/ContactPage';
 import { LoginPage, RegisterPage } from './pages/AuthPages';
 import AdminDashboard    from './pages/AdminDashboard';
 import BusinessDashboard from './pages/BusinessDashboard';
+import UserAccount       from './pages/UserAccount';
 
 import './styles/global.css';
 
@@ -33,10 +33,16 @@ function AppShell() {
           <Route path="/"               element={<HomePage />} />
           <Route path="/listings"       element={<ListingsPage />} />
           <Route path="/listings/:slug" element={<ListingDetailPage />} />
-          <Route path="/map"            element={<MapPage />} />
           <Route path="/contact"        element={<ContactPage />} />
           <Route path="/login"          element={<LoginPage />} />
           <Route path="/register"       element={<RegisterPage />} />
+
+          {/* User account — any logged-in user */}
+          <Route path="/account" element={
+            <ProtectedRoute>
+              <UserAccount />
+            </ProtectedRoute>
+          } />
 
           <Route path="/admin/*" element={
             <ProtectedRoute roles={['admin']}>
@@ -50,13 +56,15 @@ function AppShell() {
             </ProtectedRoute>
           } />
 
+          {/* /map removed — redirect if someone navigates there */}
+          <Route path="/map" element={<ListingsPage />} />
+
           <Route path="*" element={
             <div style={{
               minHeight:'100vh', display:'flex', flexDirection:'column',
               alignItems:'center', justifyContent:'center', gap:16,
               paddingTop:'var(--nav-height)',
             }}>
-              <span style={{ fontSize:64 }}>🏔</span>
               <h1 style={{ fontSize:32, fontFamily:'var(--font-display)' }}>404</h1>
               <p style={{ color:'var(--gray-500)' }}>Page not found</p>
               <a href="/" className="btn btn-primary">Go home</a>

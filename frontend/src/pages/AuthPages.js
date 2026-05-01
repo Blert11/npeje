@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import api from '../services/api';
+import Icon from '../components/common/Icon';
 import './AuthPages.css';
 
 export function LoginPage() {
@@ -11,6 +13,7 @@ export function LoginPage() {
   const [form,   setForm]   = useState({ email: '', password: '' });
   const [error,  setError]  = useState('');
   const [loading, setLoading] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +48,13 @@ export function LoginPage() {
               placeholder="you@email.com" />
           </div>
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <label className="form-label">Password</label>
+              <button type="button" className="auth-forgot-link"
+                onClick={() => setShowForgot(true)}>
+                Forgot password?
+              </button>
+            </div>
             <input type="password" className="form-input" required
               value={form.password}
               onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
@@ -62,6 +71,80 @@ export function LoginPage() {
         <p className="auth-footer-text">
           Don't have an account? <Link to="/register">Join free</Link>
         </p>
+      </div>
+
+      {showForgot && (
+        <ForgotPasswordModal
+          onClose={() => setShowForgot(false)}
+          initialEmail={form.email}
+        />
+      )}
+    </div>
+  );
+}
+
+function ForgotPasswordModal({ onClose, initialEmail }) {
+  const [email, setEmail]     = useState(initialEmail || '');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult]   = useState('');
+  const [err, setErr]         = useState('');
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!email) return setErr('Enter your email');
+    setLoading(true); setErr(''); setResult('');
+    try {
+      const { data } = await api.post('/auth/forgot-password', { email });
+      const tempPass = data.data?.temp_password;
+      if (tempPass) {
+        setResult(`Your temporary password is: ${tempPass}\n\nUse it to log in, then change it in your account settings.`);
+      } else {
+        setResult(data.message || 'If an account exists, reset instructions have been sent.');
+      }
+    } catch (e) {
+      setErr(e.response?.data?.message || 'Reset failed');
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="auth-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="auth-modal">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 18 }}>Reset password</h3>
+          <button onClick={onClose} type="button" style={{
+            width: 28, height: 28, borderRadius: '50%', background: 'var(--gray-100)',
+            border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon name="close" size={16} />
+          </button>
+        </div>
+
+        {!result ? (
+          <form onSubmit={submit}>
+            <p style={{ fontSize: 14, color: 'var(--gray-500)', marginBottom: 14 }}>
+              Enter your email and we'll generate a temporary password for you.
+            </p>
+            <div className="form-group">
+              <input type="email" className="form-input" required
+                value={email} onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com" autoFocus />
+            </div>
+            {err && <div className="auth-error">{err}</div>}
+            <button type="submit" className="btn btn-primary" disabled={loading}
+              style={{ width: '100%' }}>
+              {loading ? 'Resetting…' : 'Reset password'}
+            </button>
+          </form>
+        ) : (
+          <div>
+            <div className="ua__success" style={{ whiteSpace: 'pre-wrap', marginBottom: 14 }}>
+              {result}
+            </div>
+            <button className="btn btn-primary" onClick={onClose} style={{ width: '100%' }}>
+              Back to login
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

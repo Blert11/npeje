@@ -106,8 +106,3 @@
   font-size: 15px;
   color: #15803d;
 }
-
-@media (max-width: 768px) {
-  .business-sidebar  { width: 0; overflow: hidden; }
-  .business-content  { margin-left: 0; }
-}

@@ -1,26 +1,123 @@
 @import '../styles/hero-extras.css';
 
-.homepage { min-height: 100vh; }
+.homepage { min-height: 100vh; background: #fff; }
 
-.home-offers {
-  background: linear-gradient(180deg, var(--gray-50) 0%, #fff 100%);
-  padding-block: clamp(40px, 6vw, 64px);
+/* Carousel section */
+.home-carousel-section {
+  padding: 48px 0 56px;
+  background: #fff;
 }
 
-.home-section-head { margin-bottom: 24px; }
+.home-section-head {
+  margin-bottom: 20px;
+}
 
 .home-section-eyebrow {
-  display: inline-block;
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--theme-accent, var(--primary));
-  margin-bottom: 6px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
 }
 
 .home-section-title {
-  font-size: clamp(26px, 3.5vw, 38px);
+  font-size: clamp(24px, 3vw, 34px);
   margin: 0;
   color: var(--gray-900);
+}
+
+/* ─── SEO Section ──────────────────────────────────────── */
+.home-seo-section {
+  padding: 64px 0 72px;
+  background: var(--gray-50);
+}
+
+.home-seo-section__title {
+  text-align: center;
+  font-size: clamp(24px, 3vw, 34px);
+  color: var(--gray-900);
+  margin: 0 0 32px;
+}
+
+.home-seo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.home-seo-card {
+  background: #fff;
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.home-seo-card h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin: 0 0 8px;
+}
+
+.home-seo-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--gray-500);
+  margin: 0 0 12px;
+}
+
+.home-seo-card a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-accent, var(--primary));
+  text-decoration: none;
+}
+.home-seo-card a:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+  .home-seo-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── CTA ──────────────────────────────────────────────── */
+.home-cta-section {
+  padding: 56px 0 72px;
+  background: #fff;
+}
+
+.home-cta {
+  background: var(--gray-900);
+  border-radius: var(--radius-xl);
+  padding: clamp(32px, 5vw, 56px);
+  text-align: center;
+}
+
+.home-cta__content {
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.home-cta h2 {
+  color: #fff;
+  font-size: clamp(24px, 3.5vw, 36px);
+  margin: 0;
+}
+
+.home-cta p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .home-carousel-section { padding: 32px 0 40px; }
 }

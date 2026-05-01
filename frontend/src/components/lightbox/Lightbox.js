@@ -1,24 +1,18 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { resolveUrl } from '../common/ImageUpload';
+import Icon from '../common/Icon';
 import './Lightbox.css';
 
-/**
- * Lightbox: full-screen swipeable image viewer.
- * Props:
- *  - images:   [{ url, alt_text }]
- *  - startIndex
- *  - onClose
- */
 export default function Lightbox({ images = [], startIndex = 0, onClose }) {
   const [active, setActive] = useState(startIndex);
   const [dragX,  setDragX]  = useState(0);
+  const [dragging, setDragging] = useState(false);
   const dragStart = useRef(null);
   const total = images.length;
 
   const next = useCallback(() => setActive(a => (a + 1) % total), [total]);
   const prev = useCallback(() => setActive(a => (a - 1 + total) % total), [total]);
 
-  // Keyboard
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape')     onClose();
@@ -33,28 +27,33 @@ export default function Lightbox({ images = [], startIndex = 0, onClose }) {
     };
   }, [onClose, next, prev]);
 
-  const onTouchStart = (e) => { dragStart.current = e.touches[0].clientX; };
-  const onTouchMove  = (e) => {
-    if (dragStart.current === null) return;
-    setDragX(e.touches[0].clientX - dragStart.current);
+  // Unified pointer events (mouse + touch)
+  const onPointerDown = (e) => {
+    dragStart.current = e.clientX;
+    setDragging(true);
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
   };
-  const onTouchEnd = () => {
+  const onPointerMove = (e) => {
     if (dragStart.current === null) return;
-    if (Math.abs(dragX) > 80) {
+    setDragX(e.clientX - dragStart.current);
+  };
+  const onPointerUp = (e) => {
+    if (dragStart.current === null) return;
+    if (Math.abs(dragX) > 60) {
       if (dragX > 0) prev(); else next();
     }
     setDragX(0);
+    setDragging(false);
     dragStart.current = null;
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
   };
 
   if (!total) return null;
 
   return (
     <div className="lightbox" onClick={onClose}>
-      <button className="lightbox__close" onClick={onClose} aria-label="Close">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
+      <button className="lightbox__close" onClick={onClose} aria-label="Close" type="button">
+        <Icon name="close" size={24} />
       </button>
 
       <div className="lightbox__counter">{active + 1} / {total}</div>
@@ -62,22 +61,31 @@ export default function Lightbox({ images = [], startIndex = 0, onClose }) {
       {total > 1 && (
         <>
           <button className="lightbox__arrow lightbox__arrow--left"
-            onClick={(e) => { e.stopPropagation(); prev(); }} aria-label="Previous">‹</button>
+            onClick={(e) => { e.stopPropagation(); prev(); }} type="button">
+            <Icon name="chevron_left" size={28} strokeWidth={2.5} />
+          </button>
           <button className="lightbox__arrow lightbox__arrow--right"
-            onClick={(e) => { e.stopPropagation(); next(); }} aria-label="Next">›</button>
+            onClick={(e) => { e.stopPropagation(); next(); }} type="button">
+            <Icon name="chevron_right" size={28} strokeWidth={2.5} />
+          </button>
         </>
       )}
 
       <div className="lightbox__stage"
         onClick={(e) => e.stopPropagation()}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}>
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        style={{ touchAction: 'pan-y', cursor: dragging ? 'grabbing' : 'grab' }}>
         <img
           src={resolveUrl(images[active].url)}
           alt={images[active].alt_text || `Image ${active + 1}`}
           className="lightbox__img"
-          style={{ transform: `translateX(${dragX}px)`, transition: dragX === 0 ? 'transform 0.3s ease' : 'none' }}
+          style={{
+            transform: `translateX(${dragX}px)`,
+            transition: dragging ? 'none' : 'transform 0.3s ease',
+          }}
           draggable={false}
         />
       </div>
@@ -88,7 +96,7 @@ export default function Lightbox({ images = [], startIndex = 0, onClose }) {
             <button key={i}
               className={`lightbox__dot ${i === active ? 'active' : ''}`}
               onClick={(e) => { e.stopPropagation(); setActive(i); }}
-              aria-label={`Go to image ${i + 1}`} />
+              type="button" />
           ))}
         </div>
       )}

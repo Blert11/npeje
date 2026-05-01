@@ -1,0 +1,52 @@
+/* Language dropdown — fix flag/text alignment */
+.navbar__lang-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  overflow: hidden;
+  border: 1px solid var(--gray-100);
+  min-width: 150px;
+  z-index: 200;
+}
+
+.navbar__lang-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--gray-700);
+  transition: background 0.12s;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.navbar__lang-item:hover { background: var(--gray-50); }
+.navbar__lang-item.active {
+  background: var(--gray-50);
+  color: var(--gray-900);
+  font-weight: 600;
+}
+
+/* Flag emoji — fixed width so text aligns */
+.navbar__lang-item > span:first-child {
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.navbar__lang-code {
+  font-size: 12px;
+  font-weight: 600;
+}

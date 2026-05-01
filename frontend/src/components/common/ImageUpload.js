@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react';
 import api from '../../services/api';
+import Icon from './Icon';
 import './ImageUpload.css';
+
+let idCounter = 0;
 
 export default function ImageUpload({
   value,
@@ -14,6 +17,9 @@ export default function ImageUpload({
   const [progress,  setProgress]  = useState(0);
   const [error,     setError]     = useState('');
   const inputRef = useRef(null);
+
+  // Unique ID per instance so <label for=...> works reliably
+  const idRef = useRef(`iu-${++idCounter}`);
 
   const handleFile = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -55,6 +61,7 @@ export default function ImageUpload({
     } finally {
       setUploading(false);
       setProgress(0);
+      // Reset so selecting the same file again still fires onChange
       if (inputRef.current) inputRef.current.value = '';
     }
   };
@@ -65,45 +72,61 @@ export default function ImageUpload({
     onChange?.('');
   };
 
+  // Use <label> pattern — NO onClick on the visual box. The input is
+  // triggered ONLY by the label. This eliminates double-open entirely.
   return (
     <div className="image-upload">
       {label && <label className="form-label">{label}</label>}
-      <div className={`image-upload__box ${value ? 'has-image' : ''}`}
+
+      <input
+        ref={inputRef}
+        id={idRef.current}
+        type="file"
+        accept="image/*"
+        multiple={multiple}
+        onChange={handleFile}
+        className="image-upload__input"
+      />
+
+      <label
+        htmlFor={idRef.current}
+        className={`image-upload__box ${value ? 'has-image' : ''} ${uploading ? 'uploading' : ''}`}
         style={{ aspectRatio }}
-        onClick={() => !uploading && inputRef.current?.click()}>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          multiple={multiple}
-          onChange={handleFile}
-          className="image-upload__input"
-        />
+      >
         {value && !uploading && (
           <>
             <img src={resolveUrl(value)} alt="" className="image-upload__preview" />
-            <button className="image-upload__remove" onClick={handleRemove} type="button" aria-label="Remove">×</button>
-            <div className="image-upload__overlay"><span>Click to change</span></div>
+            <button
+              type="button"
+              className="image-upload__remove"
+              onClick={handleRemove}
+              aria-label="Remove">
+              <Icon name="close" size={16} />
+            </button>
+            <div className="image-upload__overlay">
+              <Icon name="upload" size={20} />
+              <span>Click to change</span>
+            </div>
           </>
         )}
+
         {!value && !uploading && (
           <div className="image-upload__empty">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <polyline points="21 15 16 10 5 21" />
-            </svg>
+            <Icon name="image" size={32} strokeWidth={1.5} />
             <span>{multiple ? 'Click to select images' : 'Click to upload image'}</span>
             <small>JPG, PNG, WebP — max 8MB</small>
           </div>
         )}
+
         {uploading && (
           <div className="image-upload__progress">
-            <div className="image-upload__progress-bar" style={{ width: `${progress}%` }} />
+            <div className="image-upload__progress-bar"
+              style={{ width: `${progress}%` }} />
             <span>{progress}%</span>
           </div>
         )}
-      </div>
+      </label>
+
       {error && <div className="image-upload__error">{error}</div>}
     </div>
   );

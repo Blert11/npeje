@@ -22,22 +22,22 @@ export const starsFromRating = (rating) => {
   };
 };
 
+// Categories — `iconName` matches keys in Icon.js
 export const CATEGORIES = [
-  { id: 'hotels',      icon: '🏨', color: '#3b82f6' },
-  { id: 'restaurants', icon: '🍽️', color: '#f97316' },
-  { id: 'fast_food',   icon: '🍔', color: '#ef4444' },
-  { id: 'cafes',       icon: '☕', color: '#a855f7' },
-  { id: 'villas',      icon: '🏡', color: '#22c55e' },
-  { id: 'activities',  icon: '🧗', color: '#ec4899' },
-  { id: 'nightlife',   icon: '🎶', color: '#6366f1' },
-  { id: 'transport',   icon: '🚗', color: '#14b8a6' },
-  { id: 'shops',       icon: '🛍️', color: '#f59e0b' },
+  { id: 'hotels',      iconName: 'hotels',      color: '#3b82f6' },
+  { id: 'restaurants', iconName: 'restaurants', color: '#f97316' },
+  { id: 'fast_food',   iconName: 'fast_food',   color: '#ef4444' },
+  { id: 'cafes',       iconName: 'cafes',       color: '#a855f7' },
+  { id: 'villas',      iconName: 'villas',      color: '#22c55e' },
+  { id: 'activities',  iconName: 'activities',  color: '#ec4899' },
+  { id: 'nightlife',   iconName: 'nightlife',   color: '#6366f1' },
+  { id: 'transport',   iconName: 'transport',   color: '#14b8a6' },
+  { id: 'shops',       iconName: 'shops',       color: '#f59e0b' },
 ];
 
 export const getCategoryConfig = (id) =>
-  CATEGORIES.find(c => c.id === id) || { icon: '📍', color: '#71717a' };
+  CATEGORIES.find(c => c.id === id) || { iconName: 'map_pin', color: '#71717a' };
 
-// Kept for backwards compatibility
 export const PRICE_LABELS = { 1: '€', 2: '€€', 3: '€€€', 4: '€€€€' };
 
 export const directionsUrl = (lat, lng, title) =>

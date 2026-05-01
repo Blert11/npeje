@@ -1,0 +1,167 @@
+/* ============================================================
+   Admin + Business dashboard — RESPONSIVE patches
+   Append to your existing AdminDashboard.css / BusinessDashboard.css
+   ============================================================ */
+
+@media (max-width: 900px) {
+  /* Sidebar becomes a horizontal scrolling nav bar at the top */
+  .admin-layout {
+    flex-direction: column;
+  }
+  .admin-sidebar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: auto;
+    bottom: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 8px 12px;
+    z-index: 50;
+    background: var(--primary-dark);
+  }
+  .admin-sidebar::-webkit-scrollbar { display: none; }
+
+  .admin-sidebar__brand {
+    padding: 8px 12px 8px 0;
+    border-bottom: none;
+    border-right: 1px solid rgba(255,255,255,0.15);
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  .admin-sidebar__brand a { font-size: 16px; }
+  .admin-sidebar__brand small { display: none; }
+
+  .admin-sidebar__nav {
+    flex: 1;
+    padding: 0;
+    flex-direction: row;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin-sidebar__nav::-webkit-scrollbar { display: none; }
+
+  .admin-nav-item {
+    padding: 8px 12px;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  .admin-nav-item span { display: none; }
+  .admin-nav-item svg,
+  .admin-nav-item .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .admin-sidebar__logout {
+    margin: 0 0 0 8px;
+    padding: 8px 12px;
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  .admin-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .admin-topbar {
+    padding: 0 16px;
+  }
+  .admin-topbar__title { display: none; }
+
+  .admin-page-content { padding: 16px; }
+
+  /* Grids stack */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .stat-card { padding: 14px; gap: 10px; }
+  .stat-card__value { font-size: 22px; }
+  .stat-card__label { font-size: 12px; }
+
+  .admin-charts-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .admin-chart-card { padding: 16px; }
+
+  /* Listings grid on mobile — full width cards */
+  .listing-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Toolbar wraps */
+  .admin-toolbar {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .admin-toolbar__search {
+    flex: 1 1 100%;
+  }
+
+  /* Form modals fill screen */
+  .modal-panel {
+    max-width: 100%;
+    border-radius: var(--radius);
+    max-height: 95vh;
+  }
+  .modal-form { padding: 16px; }
+  .form-row { grid-template-columns: 1fr; gap: 12px; }
+
+  .image-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Tables: allow horizontal scroll */
+  .admin-table-card {
+    overflow-x: auto;
+  }
+  .admin-table {
+    min-width: 600px;
+  }
+
+  /* Offer cards */
+  .offers-admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .admin-sidebar__brand a { font-size: 14px; }
+  .admin-nav-item { padding: 8px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .image-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Menu editor responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  .menu-editor-overlay { padding: 0; }
+  .menu-editor {
+    border-radius: 0;
+    height: 100vh;
+    max-width: 100vw;
+  }
+  .menu-editor__body { grid-template-columns: 1fr; }
+  .menu-editor__sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--gray-100);
+    max-height: 200px;
+  }
+  .menu-editor__cat-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px;
+  }
+  .cat-row { flex: 0 0 auto; min-width: 150px; }
+  .menu-editor__main { padding: 16px; }
+  .menu-items-grid { grid-template-columns: 1fr; }
+  .me-modal { max-width: calc(100% - 32px); }
+}
